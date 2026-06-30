@@ -1,5 +1,6 @@
 import streamlit as st
 
+from modules.evaluator import evaluer_paroles
 from modules.lyrics_generator import generer_chanson
 from modules.structure_checker import verifier_structure_chanson
 
@@ -107,6 +108,38 @@ def afficher_score_structure(resultat_structure: dict) -> None:
             st.write(f"- {message}")
 
 
+def afficher_evaluation(resultat_evaluation: dict) -> None:
+    assert isinstance(resultat_evaluation, dict)
+    assert "score_global" in resultat_evaluation
+
+    st.markdown("### Évaluation automatique des paroles")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        st.metric("Thème", f"{resultat_evaluation['score_theme']}/5")
+
+    with col2:
+        st.metric("Originalité", f"{resultat_evaluation['score_originalite']}/5")
+
+    with col3:
+        st.metric("Linguistique", f"{resultat_evaluation['score_linguistique']}/5")
+
+    with col4:
+        st.metric("Style", f"{resultat_evaluation['score_style']}/5")
+
+    with col5:
+        st.metric(
+            "Score global",
+            f"{resultat_evaluation['score_global']}/"
+            f"{resultat_evaluation['score_max']}",
+        )
+
+    with st.expander("Commentaires d’évaluation"):
+        for commentaire in resultat_evaluation["commentaires"]:
+            st.write(f"- {commentaire}")
+
+
 def afficher_resultat(parametres: dict) -> None:
     assert isinstance(parametres, dict)
     assert "theme" in parametres
@@ -133,10 +166,17 @@ def afficher_resultat(parametres: dict) -> None:
         langue=parametres["langue"],
     )
 
+    resultat_evaluation = evaluer_paroles(
+        texte=chanson,
+        theme=parametres["theme"],
+        style=parametres["style"],
+    )
+
     st.subheader("Résultat généré")
     st.text_area("Paroles générées", value=chanson, height=500)
 
     afficher_score_structure(resultat_structure)
+    afficher_evaluation(resultat_evaluation)
 
 
 def main() -> None:
