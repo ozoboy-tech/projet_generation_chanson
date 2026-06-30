@@ -1,6 +1,7 @@
 import streamlit as st
 
 from modules.lyrics_generator import generer_chanson
+from modules.structure_checker import verifier_structure_chanson
 
 
 EMOTIONS = ["Joyeux", "Triste", "Motivant", "Nostalgique", "Romantique"]
@@ -68,6 +69,44 @@ def afficher_formulaire() -> dict:
     }
 
 
+def afficher_score_structure(resultat_structure: dict) -> None:
+    assert isinstance(resultat_structure, dict)
+    assert "score" in resultat_structure
+
+    st.markdown("### Vérification de la structure")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Score de structure",
+            f"{resultat_structure['score']}/{resultat_structure['score_max']}",
+        )
+
+    with col2:
+        st.metric(
+            "Couplets",
+            f"{resultat_structure['couplets_detectes']}/"
+            f"{resultat_structure['nombre_couplets_attendu']}",
+        )
+
+    with col3:
+        st.metric(
+            "Refrains",
+            f"{resultat_structure['refrains_detectes']}/"
+            f"{resultat_structure['nombre_couplets_attendu']}",
+        )
+
+    if resultat_structure["structure_valide"]:
+        st.success("Structure valide.")
+    else:
+        st.warning("Structure incomplète ou à corriger.")
+
+    with st.expander("Détails de la vérification"):
+        for message in resultat_structure["messages"]:
+            st.write(f"- {message}")
+
+
 def afficher_resultat(parametres: dict) -> None:
     assert isinstance(parametres, dict)
     assert "theme" in parametres
@@ -88,8 +127,16 @@ def afficher_resultat(parametres: dict) -> None:
         nombre_couplets=parametres["nombre_couplets"],
     )
 
+    resultat_structure = verifier_structure_chanson(
+        texte=chanson,
+        nombre_couplets_attendu=parametres["nombre_couplets"],
+        langue=parametres["langue"],
+    )
+
     st.subheader("Résultat généré")
     st.text_area("Paroles générées", value=chanson, height=500)
+
+    afficher_score_structure(resultat_structure)
 
 
 def main() -> None:
