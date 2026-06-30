@@ -1,7 +1,8 @@
-# Environnement virtuel
+# Environnements virtuels
 .venv/
 venv/
 env/
+.Sujet9/
 
 # Python
 __pycache__/
@@ -9,17 +10,16 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Streamlit
-.streamlit/secrets.toml
-
 # Variables d'environnement
 .env
 
-# Fichiers générés
+# Streamlit
+.streamlit/secrets.toml
+
+# Fichiers générés par l'application
 outputs/
 *.mid
 *.pdf
-*.txt
 
 # VS Code
 .vscode/
