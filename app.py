@@ -1,5 +1,7 @@
 import streamlit as st
 
+from modules.lyrics_generator import generer_chanson
+
 
 EMOTIONS = ["Joyeux", "Triste", "Motivant", "Nostalgique", "Romantique"]
 LANGUES = ["Français", "Anglais", "Bambara"]
@@ -66,7 +68,7 @@ def afficher_formulaire() -> dict:
     }
 
 
-def afficher_resultat_temporaire(parametres: dict) -> None:
+def afficher_resultat(parametres: dict) -> None:
     assert isinstance(parametres, dict)
     assert "theme" in parametres
 
@@ -78,29 +80,16 @@ def afficher_resultat_temporaire(parametres: dict) -> None:
         st.error("Le thème est obligatoire.")
         return
 
-    st.subheader("Résultat généré")
-
-    st.success("Interface validée. La génération réelle sera ajoutée à l’étape suivante.")
-
-    st.markdown("### Paramètres sélectionnés")
-    st.write(f"**Thème :** {parametres['theme']}")
-    st.write(f"**Émotion :** {parametres['emotion']}")
-    st.write(f"**Langue :** {parametres['langue']}")
-    st.write(f"**Style musical :** {parametres['style']}")
-    st.write(f"**Nombre de couplets :** {parametres['nombre_couplets']}")
-
-    st.markdown("### Aperçu temporaire")
-    st.text_area(
-        "Paroles",
-        value=(
-            "Titre : Exemple temporaire\n\n"
-            "Couplet 1 :\n"
-            "Les paroles seront générées ici à partir du module NLP.\n\n"
-            "Refrain :\n"
-            "Le refrain sera généré ici.\n"
-        ),
-        height=250,
+    chanson = generer_chanson(
+        theme=parametres["theme"],
+        emotion=parametres["emotion"],
+        langue=parametres["langue"],
+        style=parametres["style"],
+        nombre_couplets=parametres["nombre_couplets"],
     )
+
+    st.subheader("Résultat généré")
+    st.text_area("Paroles générées", value=chanson, height=500)
 
 
 def main() -> None:
@@ -110,7 +99,7 @@ def main() -> None:
     configurer_page()
     afficher_entete()
     parametres = afficher_formulaire()
-    afficher_resultat_temporaire(parametres)
+    afficher_resultat(parametres)
 
 
 if __name__ == "__main__":
