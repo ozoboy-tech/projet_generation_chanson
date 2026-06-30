@@ -1,0 +1,29 @@
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Variables d'environnement
+.env
+
+# Fichiers générés
+outputs/
+*.mid
+*.pdf
+*.txt
+
+# VS Code
+.vscode/
+
+# Système
+.DS_Store
+Thumbs.db
